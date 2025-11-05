@@ -1,0 +1,46 @@
+# Core Dependencies
+fastapi
+uvicorn[standard]
+streamlit
+python-dotenv
+
+# Data Processing
+pandas
+numpy
+requests
+
+# Machine Learning
+scikit-learn
+xgboost
+lightgbm
+tensorflow
+torch
+
+# Model Interpretability
+shap
+
+# Feature Store (Optional - choose one)
+hopsworks
+# google-cloud-aiplatform==1.38.0  # For Vertex AI
+
+# Database
+pymongo
+sqlalchemy
+
+# Visualization
+plotly
+matplotlib
+seaborn
+
+# Monitoring
+prometheus-client
+
+# Testing
+pytest
+pytest-cov
+
+# Utilities
+pydantic
+pyyaml
+loguru
+schedule

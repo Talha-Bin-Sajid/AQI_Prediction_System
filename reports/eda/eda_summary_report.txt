@@ -1,0 +1,47 @@
+
+============================================================
+AQI EXPLORATORY DATA ANALYSIS REPORT
+============================================================
+Generated: 2025-10-26 19:33:37
+Location: Karachi
+
+DATASET OVERVIEW
+------------------------------------------------------------
+Total Records: 8,520
+Date Range: 2024-10-26 19:00:00 to 2025-10-26 18:00:00
+Duration: 364 days
+
+AQI STATISTICS
+------------------------------------------------------------
+Mean AQI: 118.77
+Median AQI: 89.48
+Std Dev: 88.94
+Min AQI: 15.38
+Max AQI: 500.00
+
+AQI DISTRIBUTION
+------------------------------------------------------------
+Good (0-50): 1,220 (14.3%)
+Moderate (51-100): 3,624 (42.5%)
+Unhealthy for Sensitive (101-150): 1,179 (13.8%)
+Unhealthy (151-200): 1,547 (18.2%)
+Very Unhealthy (201-300): 518 (6.1%)
+Hazardous (300+): 432 (5.1%)
+
+KEY INSIGHTS
+------------------------------------------------------------
+1. Temporal Patterns Identified
+2. Pollutant Correlations Analyzed  
+3. Outliers Detected and Documented
+4. Trend and Seasonality Assessed
+
+VISUALIZATIONS GENERATED
+------------------------------------------------------------
+[OK] temporal_patterns.png
+[OK] pollutant_correlations.png
+[OK] correlation_matrix.png
+[OK] distribution_analysis.png
+[OK] trend_analysis.png
+
+============================================================
+        

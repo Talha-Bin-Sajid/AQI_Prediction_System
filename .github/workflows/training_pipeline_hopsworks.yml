@@ -1,0 +1,61 @@
+name: Incremental Training Pipeline
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Run daily at 2 AM UTC
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  incremental-training:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Train with Hopsworks features
+      env:
+        HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+        HOPSWORKS_PROJECT_NAME: ${{ secrets.HOPSWORKS_PROJECT_NAME }}
+        USE_HOPSWORKS: "true"
+        OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+        LATITUDE: ${{ secrets.LATITUDE }}
+        LONGITUDE: ${{ secrets.LONGITUDE }}
+        CITY_NAME: ${{ secrets.CITY_NAME }}
+      run: |
+        python scripts/run_training_with_hopsworks.py
+    
+    - name: Upload model artifacts
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: incremental-model-${{ github.run_id }}
+        path: |
+          models/saved_models/latest_model.pkl
+          models/saved_models/latest_model_metadata.json
+        retention-days: 30
+    
+    - name: Create version tag
+      if: success()
+      run: |
+        TAG_NAME="incremental-$(date +'%Y%m%d-%H%M%S')"
+        echo "🏷️ Creating incremental model tag: $TAG_NAME"
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag $TAG_NAME
+        git push origin $TAG_NAME
+      continue-on-error: true
+    
+    - name: Log success
+      if: success()
+      run: echo "✅ Incremental training completed with Hopsworks features"

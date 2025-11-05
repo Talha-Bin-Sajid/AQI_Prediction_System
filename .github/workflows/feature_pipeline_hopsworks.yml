@@ -1,0 +1,44 @@
+name: Incremental Feature Pipeline
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Run every hour
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  incremental-features:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run incremental feature pipeline
+      env:
+        OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+        LATITUDE: ${{ secrets.LATITUDE }}
+        LONGITUDE: ${{ secrets.LONGITUDE }}
+        CITY_NAME: ${{ secrets.CITY_NAME }}
+        HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+        HOPSWORKS_PROJECT_NAME: ${{ secrets.HOPSWORKS_PROJECT_NAME }}
+        USE_HOPSWORKS: "true"
+      run: |
+        python scripts/run_feature_pipeline.py
+    
+    - name: Log success
+      if: success()
+      run: echo "✅ Incremental features pushed to Hopsworks"
+    
+    - name: Log failure
+      if: failure()
+      run: echo "❌ Feature pipeline failed"
