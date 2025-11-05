@@ -1,6 +1,5 @@
 """
 Configuration module for AQI Prediction System
-FINAL OPTIMIZED - Target R² > 0.6 for all models
 """
 import os
 from pathlib import Path
