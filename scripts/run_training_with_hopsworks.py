@@ -15,7 +15,7 @@ from src.config import config
 import hopsworks
 
 def pull_all_features_from_hopsworks():
-    """Pull processed features from Hopsworks - PRODUCTION VERSION"""
+    """Pull processed features from Hopsworks - DEBUG VERSION"""
     try:
         project = hopsworks.login(
             api_key_value=config.hopsworks.api_key,
@@ -23,8 +23,16 @@ def pull_all_features_from_hopsworks():
         )
         dataset_api = project.get_dataset_api()
         
-        # PRODUCTION: Only check the main feature file
-        target_filename = "good_features.csv"
+        # First, let's see what files actually exist
+        logger.info("🔍 Checking available files in Hopsworks...")
+        try:
+            files = dataset_api.list("Resources")
+            logger.info(f"📁 Available files in Resources/: {files}")
+        except Exception as e:
+            logger.warning(f"Could not list files: {e}")
+        
+        # Try the correct filename
+        target_filename = "incremental_features.csv"
         
         try:
             logger.info(f"📥 Downloading features from: {target_filename}")
