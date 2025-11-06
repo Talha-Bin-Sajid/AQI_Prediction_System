@@ -11,12 +11,13 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+        cache: 'pip'
     
     - name: Install dependencies
       run: |
@@ -37,13 +38,14 @@ jobs:
     
     - name: Upload model artifacts
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: incremental-model-${{ github.run_id }}
         path: |
           models/saved_models/latest_model.pkl
           models/saved_models/latest_model_metadata.json
         retention-days: 30
+        compression-level: 9
     
     - name: Create version tag
       if: success()
