@@ -15,7 +15,7 @@ from src.config import config
 import hopsworks
 
 def pull_all_features_from_hopsworks():
-    """Pull processed features from Hopsworks - FIXED PATH"""
+    """Pull features from Hopsworks - ONLY USE GOOD_FEATURES.CSV"""
     try:
         project = hopsworks.login(
             api_key_value=config.hopsworks.api_key,
@@ -23,28 +23,32 @@ def pull_all_features_from_hopsworks():
         )
         dataset_api = project.get_dataset_api()
         
-        # Use the FULL PATH that we found in debug
-        target_filename = "Resources/incremental_features.csv"
+        # ALWAYS use good_features.csv (which now contains both original + incremental data)
+        target_filename = "Resources/good_features.csv"
         
         try:
-            logger.info(f"📥 Downloading features from: {target_filename}")
+            logger.info(f"📥 Downloading from: {target_filename}")
             downloaded_path = dataset_api.download(
-                target_filename,  # Use full path here
+                target_filename,
                 "features_download.csv",
                 overwrite=True
             )
             
             df = pd.read_csv(downloaded_path)
-            logger.info(f"✅ Downloaded {len(df)} features from {target_filename}")
+            logger.info(f"✅ Downloaded {len(df)} features from good_features.csv")
             
             # Clean up
             Path(downloaded_path).unlink()
             
             df['timestamp'] = pd.to_datetime(df['timestamp'])
+            
+            # Log data range
+            logger.info(f"📅 Data range in good_features.csv: {df['timestamp'].min()} to {df['timestamp'].max()}")
+            
             return df
             
         except Exception as e:
-            logger.error(f"❌ Failed to download {target_filename}: {e}")
+            logger.error(f"❌ Failed to download good_features.csv: {e}")
             return None
         
     except Exception as e:
