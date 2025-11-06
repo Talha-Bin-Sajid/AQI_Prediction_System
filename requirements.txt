@@ -20,7 +20,7 @@ torch
 shap
 
 # Feature Store (Optional - choose one)
-hopsworks
+hopsworks==4.2.*
 # google-cloud-aiplatform==1.38.0  # For Vertex AI
 
 # Database
