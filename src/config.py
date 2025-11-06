@@ -53,72 +53,6 @@ class HopsworksConfig(BaseModel):
     project_name: str = os.getenv("HOPSWORKS_PROJECT_NAME", "aqi_prediction")
     use_hopsworks: bool = os.getenv("USE_HOPSWORKS", "false").lower() == "true"
 
-
-# class ModelConfig(BaseModel):
-#     """Model configuration - SIMPLIFIED to prevent overfitting"""
-#     model_version: str = os.getenv("MODEL_VERSION", "v3_simple")
-#     prediction_days: int = int(os.getenv("PREDICTION_DAYS", "3"))
-#     models_to_train: list = [
-#         "ridge_regression",  # Add Ridge back - it was best!
-#         "random_forest",
-#         "xgboost",
-#         "lightgbm"
-#     ]
-    
-#     # DRASTICALLY REDUCED features
-#     lag_features: list = [24]  # Only 24h lag (yesterday same time)
-#     rolling_windows: list = [24]  # Only 24h window
-    
-#     # Random Forest - MUCH SIMPLER
-#     random_forest_params: dict = {
-#         "n_estimators": 50,  # Reduced from 250
-#         "max_depth": 6,  # Reduced from 18
-#         "min_samples_split": 20,  # Increased
-#         "min_samples_leaf": 10,  # Increased
-#         "max_features": 0.3,  # Use only 30% of features
-#         "bootstrap": True,
-#         "random_state": 42,
-#         "n_jobs": -1
-#     }
-    
-#     # XGBoost - SIMPLIFIED
-#     xgboost_params: dict = {
-#         "n_estimators": 100,
-#         "max_depth": 4,
-#         "learning_rate": 0.1,
-#         "subsample": 0.7,
-#         "colsample_bytree": 0.7,
-#         "min_child_weight": 5,
-#         "gamma": 0.5,
-#         "reg_alpha": 1.0,
-#         "reg_lambda": 2.0,
-#         "random_state": 42,
-#         "n_jobs": -1
-#     }
-    
-#     # LightGBM - SIMPLIFIED
-#     lightgbm_params: dict = {
-#         "n_estimators": 100,
-#         "max_depth": 5,
-#         "learning_rate": 0.1,
-#         "num_leaves": 15,  # Reduced from 50
-#         "min_child_samples": 20,
-#         "subsample": 0.7,
-#         "colsample_bytree": 0.7,
-#         "reg_alpha": 0.5,
-#         "reg_lambda": 1.0,
-#         "random_state": 42,
-#         "n_jobs": -1,
-#         "verbose": -1
-#     }
-    
-#     # Ridge - Keep strong
-#     ridge_params: dict = {
-#         "alpha": 50.0,  # Strong regularization
-#         "random_state": 42,
-#         "max_iter": 10000
-#     }
-
 class ModelConfig(BaseModel):
     """ULTRA-SIMPLE model configuration"""
     model_version: str = os.getenv("MODEL_VERSION", "v4_simple")
@@ -230,13 +164,13 @@ if __name__ == "__main__":
     # Test configuration
     try:
         config.validate_config()
-        print("✅ Configuration validated successfully")
-        print(f"📍 Location: {config.location.city_name}")
-        print(f"🌐 Latitude: {config.location.latitude}")
-        print(f"🌐 Longitude: {config.location.longitude}")
-        print(f"📊 Models to train: {', '.join(config.model.models_to_train)}")
-        print(f"🎯 Lag features: {config.model.lag_features}")
-        print(f"📊 Rolling windows: {config.model.rolling_windows}")
-        print(f"🔧 Test size: {config.pipeline.test_size}")
+        print("Configuration validated successfully")
+        print(f"Location: {config.location.city_name}")
+        print(f"Latitude: {config.location.latitude}")
+        print(f"Longitude: {config.location.longitude}")
+        print(f"Models to train: {', '.join(config.model.models_to_train)}")
+        print(f"Lag features: {config.model.lag_features}")
+        print(f"Rolling windows: {config.model.rolling_windows}")
+        print(f"Test size: {config.pipeline.test_size}")
     except Exception as e:
-        print(f"❌ Configuration error: {e}")
+        print(f"Configuration error: {e}")

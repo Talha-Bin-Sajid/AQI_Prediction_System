@@ -170,7 +170,7 @@ class OpenWeatherFetcher:
             data = response.json()
             
             if "list" not in data:
-                logger.warning("❌ No air pollution data found in response")
+                logger.warning("No air pollution data found in response")
                 return None
             
             records = []
@@ -202,16 +202,16 @@ class OpenWeatherFetcher:
                 records.append(record)
             
             df = pd.DataFrame(records)
-            logger.info(f"✅ Fetched {len(df)} air pollution records")
-            logger.info(f"🌈 AQI range: {df['aqi'].min():.1f} - {df['aqi'].max():.1f}")
+            logger.info(f"Fetched {len(df)} air pollution records")
+            logger.info(f"AQI range: {df['aqi'].min():.1f} - {df['aqi'].max():.1f}")
             
             return df
             
         except requests.exceptions.RequestException as e:
-            logger.error(f"❌ Error fetching air pollution data: {e}")
+            logger.error(f"Error fetching air pollution data: {e}")
             return None
         except Exception as e:
-            logger.error(f"❌ Unexpected error: {e}")
+            logger.error(f"Unexpected error: {e}")
             return None
     
     def fetch_weather_forecast(self) -> Optional[pd.DataFrame]:
@@ -230,14 +230,14 @@ class OpenWeatherFetcher:
         }
         
         try:
-            logger.info("🌤️ Fetching weather forecast")
+            logger.info("Fetching weather forecast")
             response = requests.get(url, params=params, timeout=30)
             response.raise_for_status()
             
             data = response.json()
             
             if "list" not in data:
-                logger.warning("❌ No weather forecast data found")
+                logger.warning("No weather forecast data found")
                 return None
             
             records = []
@@ -271,11 +271,11 @@ class OpenWeatherFetcher:
                 records.append(record)
             
             df = pd.DataFrame(records)
-            logger.info(f"✅ Fetched {len(df)} weather forecast records")
+            logger.info(f"Fetched {len(df)} weather forecast records")
             return df
             
         except requests.exceptions.RequestException as e:
-            logger.error(f"❌ Error fetching weather forecast: {e}")
+            logger.error(f"Error fetching weather forecast: {e}")
             return None
     
     def fetch_current_air_pollution(self) -> Optional[Dict]:
@@ -293,14 +293,14 @@ class OpenWeatherFetcher:
         }
         
         try:
-            logger.info("🌫️ Fetching current air pollution")
+            logger.info("Fetching current air pollution")
             response = requests.get(url, params=params, timeout=30)
             response.raise_for_status()
             
             data = response.json()
             
             if "list" not in data or len(data["list"]) == 0:
-                logger.warning("❌ No current air pollution data found")
+                logger.warning("No current air pollution data found")
                 return None
             
             item = data["list"][0]
@@ -330,11 +330,11 @@ class OpenWeatherFetcher:
                 "nh3": item["components"]["nh3"],
             }
             
-            logger.info(f"✅ Fetched current air pollution data - AQI: {calculated_aqi:.1f}")
+            logger.info(f"Fetched current air pollution data - AQI: {calculated_aqi:.1f}")
             return record
             
         except requests.exceptions.RequestException as e:
-            logger.error(f"❌ Error fetching current air pollution: {e}")
+            logger.error(f"Error fetching current air pollution: {e}")
             return None
     
     def backfill_historical_data(
@@ -360,26 +360,26 @@ class OpenWeatherFetcher:
         successful_batches = 0
         total_batches = (days + batch_days - 1) // batch_days  # Ceiling division
         
-        logger.info(f"📦 Backfilling {days} days ({total_batches} batches) of data...")
-        logger.info(f"📅 From: {start_date.date()} To: {end_date.date()}")
+        logger.info(f"Backfilling {days} days ({total_batches} batches) of data...")
+        logger.info(f"From: {start_date.date()} To: {end_date.date()}")
         
         batch_number = 1
         while current_start < end_date:
             current_end = min(current_start + timedelta(days=batch_days), end_date)
             
             try:
-                logger.info(f"🔄 Batch {batch_number}/{total_batches}: {current_start.date()} to {current_end.date()}")
+                logger.info(f"Batch {batch_number}/{total_batches}: {current_start.date()} to {current_end.date()}")
                 df_batch = self.fetch_air_pollution_history(current_start, current_end)
                 
                 if df_batch is not None and not df_batch.empty:
                     all_data.append(df_batch)
                     successful_batches += 1
-                    logger.info(f"✅ Batch {batch_number} SUCCESS: {len(df_batch)} records")
+                    logger.info(f"Batch {batch_number} SUCCESS: {len(df_batch)} records")
                 else:
-                    logger.warning(f"⚠️  Batch {batch_number} EMPTY: {current_start.date()} to {current_end.date()}")
-                
+                    logger.warning(f"Batch {batch_number} EMPTY: {current_start.date()} to {current_end.date()}")
+
             except Exception as e:
-                logger.error(f"❌ Batch {batch_number} FAILED: {e}")
+                logger.error(f"Batch {batch_number} FAILED: {e}")
             
             current_start = current_end
             batch_number += 1
@@ -398,8 +398,8 @@ class OpenWeatherFetcher:
             expected_records = days * 24  # 24 records per day (hourly)
             coverage_percentage = (total_records / expected_records) * 100
             
-            logger.info(f"🎉 365-DAY BACKFILL COMPLETE!")
-            logger.info(f"📊 Summary:")
+            logger.info(f" 365-DAY BACKFILL COMPLETE!")
+            logger.info(f" Summary:")
             logger.info(f"   Successful batches: {successful_batches}/{total_batches}")
             logger.info(f"   Total records: {total_records}")
             logger.info(f"   Data coverage: {coverage_percentage:.1f}%")
@@ -413,11 +413,11 @@ class OpenWeatherFetcher:
             # Save to disk
             output_path = config.RAW_DATA_DIR / f"historical_aqi_{self.city_name.lower()}.csv"
             combined_df.to_csv(output_path, index=False)
-            logger.info(f"💾 Saved 365-day data to {output_path}")
+            logger.info(f"Saved 365-day data to {output_path}")
             
             return combined_df
         else:
-            logger.error("💥 No data fetched during 365-day backfill")
+            logger.error("No data fetched during 365-day backfill")
             return pd.DataFrame()
     
     def save_latest_data(self, df: pd.DataFrame, data_type: str = "pollution"):
@@ -427,7 +427,7 @@ class OpenWeatherFetcher:
         output_path = config.RAW_DATA_DIR / filename
         
         df.to_csv(output_path, index=False)
-        logger.info(f"💾 Saved {data_type} data to {output_path}")
+        logger.info(f"Saved {data_type} data to {output_path}")
 
 
 def main():
@@ -437,16 +437,16 @@ def main():
     # Test current air pollution
     current = fetcher.fetch_current_air_pollution()
     if current:
-        logger.info(f"🌫️ Current AQI: {current['aqi']}")
-        logger.info(f"📊 PM2.5: {current['pm2_5']} μg/m³")
+        logger.info(f"Current AQI: {current['aqi']}")
+        logger.info(f"PM2.5: {current['pm2_5']} μg/m³")
     
     # Test 7-day sample
     end_date = datetime.now()
     start_date = end_date - timedelta(days=7)
     sample_data = fetcher.fetch_air_pollution_history(start_date, end_date)
     if sample_data is not None:
-        logger.info(f"📈 Sample data: {len(sample_data)} records")
-        logger.info(f"🌈 AQI range: {sample_data['aqi'].min():.1f} - {sample_data['aqi'].max():.1f}")
+        logger.info(f"Sample data: {len(sample_data)} records")
+        logger.info(f"AQI range: {sample_data['aqi'].min():.1f} - {sample_data['aqi'].max():.1f}")
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ def pull_all_features_from_hopsworks():
         target_filename = "Resources/good_features.csv"
         
         try:
-            logger.info(f"📥 Downloading from: {target_filename}")
+            logger.info(f"Downloading from: {target_filename}")
             downloaded_path = dataset_api.download(
                 target_filename,
                 "features_download.csv",
@@ -35,7 +35,7 @@ def pull_all_features_from_hopsworks():
             )
             
             df = pd.read_csv(downloaded_path)
-            logger.info(f"✅ Downloaded {len(df)} features from good_features.csv")
+            logger.info(f"Downloaded {len(df)} features from good_features.csv")
             
             # Clean up
             Path(downloaded_path).unlink()
@@ -43,16 +43,16 @@ def pull_all_features_from_hopsworks():
             df['timestamp'] = pd.to_datetime(df['timestamp'])
             
             # Log data range
-            logger.info(f"📅 Data range in good_features.csv: {df['timestamp'].min()} to {df['timestamp'].max()}")
+            logger.info(f"Data range in good_features.csv: {df['timestamp'].min()} to {df['timestamp'].max()}")
             
             return df
             
         except Exception as e:
-            logger.error(f"❌ Failed to download good_features.csv: {e}")
+            logger.error(f"Failed to download good_features.csv: {e}")
             return None
         
     except Exception as e:
-        logger.error(f"❌ Failed to connect to Hopsworks: {e}")
+        logger.error(f"Failed to connect to Hopsworks: {e}")
         return None
 
 def main():
@@ -67,12 +67,12 @@ def main():
         hopsworks_data = pull_all_features_from_hopsworks()
         
         if hopsworks_data is None or hopsworks_data.empty:
-            logger.error("❌ Cannot train - no features available from Hopsworks")
+            logger.error("Cannot train - no features available from Hopsworks")
             return 1
-        
-        logger.info(f"✅ Training with {len(hopsworks_data)} ACTUAL records from Hopsworks")
-        logger.info(f"📅 Data range: {hopsworks_data['timestamp'].min()} to {hopsworks_data['timestamp'].max()}")
-        
+
+        logger.info(f"Training with {len(hopsworks_data)} ACTUAL records from Hopsworks")
+        logger.info(f"Data range: {hopsworks_data['timestamp'].min()} to {hopsworks_data['timestamp'].max()}")
+
         # Step 2: Prepare training data FROM HOPSWORKS
         engineer = FeatureEngineer()
         X_train, X_test, y_train, y_test = engineer.prepare_train_test_split(
@@ -107,9 +107,9 @@ def main():
         })
         
         logger.info("\n" + "=" * 60)
-        logger.info("✅ TRUE INCREMENTAL TRAINING COMPLETED")
-        logger.info(f"✅ Used {len(hopsworks_data)} features from Hopsworks")
-        logger.info("✅ Real workflow: PUSH → PULL → TRAIN")
+        logger.info("TRUE INCREMENTAL TRAINING COMPLETED")
+        logger.info(f"Used {len(hopsworks_data)} features from Hopsworks")
+        logger.info("Real workflow: PUSH → PULL → TRAIN")
         logger.info("=" * 60)
         return 0
         

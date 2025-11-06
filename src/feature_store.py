@@ -33,10 +33,10 @@ class HopsworksFeatureStore:
             )
             
             self.fs = self.project.get_feature_store()
-            logger.info("✅ Connected to Hopsworks Feature Store")
+            logger.info("Connected to Hopsworks Feature Store")
             
         except Exception as e:
-            logger.error(f"❌ Failed to connect to Hopsworks: {e}")
+            logger.error(f"Failed to connect to Hopsworks: {e}")
             raise
 
     # ========== INCREMENTAL FEATURE METHODS ==========
@@ -73,12 +73,12 @@ class HopsworksFeatureStore:
             
             # Upload merged features
             uploaded_path = self.upload_features(combined_df)
-            logger.info(f"✅ Incremental features pushed to: {uploaded_path}")
+            logger.info(f"Incremental features pushed to: {uploaded_path}")
             
             return True
             
         except Exception as e:
-            logger.error(f"❌ Incremental push failed: {e}")
+            logger.error(f"Incremental push failed: {e}")
             return False
 
     def download_features(self) -> Optional[pd.DataFrame]:
@@ -90,7 +90,7 @@ class HopsworksFeatureStore:
             downloaded_path = dataset_api.download("Resources/incremental_features.csv", overwrite=True)
             
             df = pd.read_csv(downloaded_path)
-            logger.info(f"✅ Downloaded {len(df)} features from Hopsworks")
+            logger.info(f"Downloaded {len(df)} features from Hopsworks")
             return df
             
         except Exception as e:
@@ -115,7 +115,7 @@ class HopsworksFeatureStore:
             return uploaded_path
             
         except Exception as e:
-            logger.error(f"❌ Upload failed: {e}")
+            logger.error(f"Upload failed: {e}")
             raise
 
     def pull_features_for_training(self) -> Optional[pd.DataFrame]:
@@ -129,17 +129,17 @@ class HopsworksFeatureStore:
             features_df = self.download_features()
             
             if features_df is None:
-                logger.error("❌ No features available in Hopsworks for training")
+                logger.error("No features available in Hopsworks for training")
                 return None
             
             # Ensure timestamp is datetime
             features_df['timestamp'] = pd.to_datetime(features_df['timestamp'])
             
-            logger.info(f"✅ Successfully pulled {len(features_df)} features for training")
+            logger.info(f"Successfully pulled {len(features_df)} features for training")
             return features_df
             
         except Exception as e:
-            logger.error(f"❌ Failed to pull features for training: {e}")
+            logger.error(f"Failed to pull features for training: {e}")
             return None
 
     def get_last_feature_timestamp(self) -> Optional[datetime]:
@@ -169,7 +169,7 @@ class HopsworksFeatureStore:
         version: int = 1
     ):
         """Legacy method - kept for compatibility"""
-        logger.warning("⚠️ Using legacy feature group method. Consider using incremental methods.")
+        logger.warning("Using legacy feature group method. Consider using incremental methods.")
         try:
             # For incremental workflow, we don't use feature groups
             # But we'll implement a basic version for compatibility
@@ -192,12 +192,12 @@ class HopsworksFeatureStore:
             return self.feature_group
             
         except Exception as e:
-            logger.error(f"❌ Legacy feature group creation failed: {e}")
+            logger.error(f"Legacy feature group creation failed: {e}")
             raise
 
     def insert_features(self, df: pd.DataFrame, overwrite: bool = False):
         """Legacy method - redirects to incremental push"""
-        logger.warning("⚠️ Using legacy insert method. Redirecting to incremental push.")
+        logger.warning("Using legacy insert method. Redirecting to incremental push.")
         return self.push_features_incremental(df)
 
     # ========== FEATURE VIEW METHODS (for training) ==========
@@ -254,7 +254,7 @@ class HopsworksFeatureStore:
             return X_train, X_test, y_train, y_test
             
         except Exception as e:
-            logger.error(f"❌ Error getting training data: {e}")
+            logger.error(f"Error getting training data: {e}")
             raise
 
 
@@ -273,14 +273,14 @@ def push_features_to_hopsworks(df: pd.DataFrame):
         success = fs.push_features_incremental(df)
         
         if success:
-            logger.info("✅ Features successfully pushed to Hopsworks (incremental)")
+            logger.info("Features successfully pushed to Hopsworks (incremental)")
         else:
-            logger.error("❌ Failed to push features to Hopsworks")
+            logger.error("Failed to push features to Hopsworks")
         
         return success
         
     except Exception as e:
-        logger.error(f"❌ Failed to push features to Hopsworks: {e}")
+        logger.error(f"Failed to push features to Hopsworks: {e}")
         return False
 
 def pull_features_from_hopsworks() -> Optional[pd.DataFrame]:
@@ -296,14 +296,14 @@ def pull_features_from_hopsworks() -> Optional[pd.DataFrame]:
         features_df = fs.pull_features_for_training()
         
         if features_df is not None:
-            logger.info("✅ Features successfully loaded from Hopsworks")
+            logger.info("Features successfully loaded from Hopsworks")
         else:
-            logger.error("❌ No features available from Hopsworks")
-        
+            logger.error("No features available from Hopsworks")
+
         return features_df
         
     except Exception as e:
-        logger.error(f"❌ Failed to load features from Hopsworks: {e}")
+        logger.error(f"Failed to load features from Hopsworks: {e}")
         return None
 
 def load_features_from_hopsworks() -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
@@ -317,12 +317,12 @@ def load_features_from_hopsworks() -> Tuple[pd.DataFrame, pd.DataFrame, pd.Serie
     try:
         fs = HopsworksFeatureStore()
         X_train, X_test, y_train, y_test = fs.get_training_data()
-        
-        logger.info("✅ Features successfully loaded from Hopsworks")
+
+        logger.info("Features successfully loaded from Hopsworks")
         return X_train, X_test, y_train, y_test
         
     except Exception as e:
-        logger.error(f"❌ Failed to load features from Hopsworks: {e}")
+        logger.error(f"Failed to load features from Hopsworks: {e}")
         raise
 
 def get_last_hopsworks_timestamp() -> Optional[datetime]:
@@ -355,17 +355,17 @@ def main():
         
         # Test incremental push
         success = fs.push_features_incremental(sample_data)
-        logger.info(f"✅ Incremental push test: {success}")
+        logger.info(f"Incremental push test: {success}")
         
         # Test feature pull
         features = fs.pull_features_for_training()
         if features is not None:
-            logger.info(f"✅ Feature pull test: {len(features)} records")
-        
-        logger.info("✅ Hopsworks incremental integration test successful")
-        
+            logger.info(f"Feature pull test: {len(features)} records")
+
+        logger.info("Hopsworks incremental integration test successful")
+
     except Exception as e:
-        logger.error(f"❌ Test failed: {e}")
+        logger.error(f"Test failed: {e}")
 
 
 if __name__ == "__main__":

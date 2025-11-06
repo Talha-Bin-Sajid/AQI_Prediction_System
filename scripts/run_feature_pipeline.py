@@ -82,28 +82,28 @@ def push_features_to_hopsworks(df_features: pd.DataFrame, incremental: bool = Tr
                 Path(downloaded_path).unlink()
                 Path("existing_good_features.csv").unlink(missing_ok=True)
                 
-                logger.info(f"✅ GOOD_FEATURES.CSV updated: {len(df_engineered)} new + {len(existing_df)} existing = {len(combined_df)} total")
+                logger.info(f"GOOD_FEATURES.CSV updated: {len(df_engineered)} new + {len(existing_df)} existing = {len(combined_df)} total")
                 
             except Exception as e:
                 # First time - create good_features.csv with initial data
-                logger.info("🆕 Creating initial good_features.csv...")
+                logger.info("Creating initial good_features.csv...")
                 temp_file = "temp_initial_good_features.csv"
                 df_engineered.to_csv(temp_file, index=False)
                 uploaded_path = dataset_api.upload(temp_file, "Resources", overwrite=True)
                 Path(temp_file).unlink()
-                logger.info(f"✅ Created initial good_features.csv: {len(df_engineered)} records")
+                logger.info(f"Created initial good_features.csv: {len(df_engineered)} records")
         else:
             # Full refresh - replace entire good_features.csv
             temp_file = "temp_refresh_good_features.csv"
             df_engineered.to_csv(temp_file, index=False)
             uploaded_path = dataset_api.upload(temp_file, "Resources", overwrite=True)
             Path(temp_file).unlink()
-            logger.info(f"✅ Full refresh of good_features.csv: {len(df_engineered)} records")
+            logger.info(f"Full refresh of good_features.csv: {len(df_engineered)} records")
         
         return True
         
     except Exception as e:
-        logger.error(f"❌ Failed to update good_features.csv: {e}")
+        logger.error(f"Failed to update good_features.csv: {e}")
         return False
     
 def main():
@@ -144,9 +144,9 @@ def main():
         success = push_features_to_hopsworks(df, incremental=True)
         
         if success:
-            logger.info("✅ New features appended to good_features.csv")
+            logger.info("New features appended to good_features.csv")
         else:
-            logger.error("❌ Failed to update good_features.csv")
+            logger.error("Failed to update good_features.csv")
             return 1
         
         logger.info("=" * 60)
@@ -159,67 +159,6 @@ def main():
         import traceback
         traceback.print_exc()
         return 1
-    """Run incremental feature pipeline"""
-    logger.info("=" * 60)
-    logger.info("INCREMENTAL FEATURE PIPELINE TO HOPSWORKS")
-    logger.info("=" * 60)
     
-    try:
-        # Initialize components
-        fetcher = OpenWeatherFetcher()
-        engineer = FeatureEngineer()
-        
-        # Get last processed timestamp to avoid duplicates
-        last_timestamp = get_last_processed_timestamp()
-        
-        if last_timestamp:
-            # Fetch only new data since last processing
-            start_date = last_timestamp
-            logger.info(f"Fetching new data since: {start_date}")
-        else:
-            # First run - fetch last 7 days for initial data
-            start_date = datetime.now() - timedelta(days=7)
-            logger.info(f"Initial run - fetching data since: {start_date}")
-        
-        end_date = datetime.now()
-        
-        # Fetch data
-        df = fetcher.fetch_air_pollution_history(start_date, end_date)
-        
-        if df is None or df.empty:
-            logger.info("No new data to process")
-            return 0
-        
-        logger.info(f"Fetched {len(df)} new records")
-        
-        # Engineer features
-        df_features = engineer.engineer_features(df)
-        
-        if df_features.empty:
-            logger.error("Feature engineering failed")
-            return 1
-        
-        logger.info(f"Engineered {len(df_features)} feature records")
-        
-        # Push to Hopsworks (incremental)
-        success = push_features_to_hopsworks(df_features, incremental=True)
-        
-        if success:
-            logger.info("✅ Incremental features pushed to Hopsworks")
-        else:
-            logger.error("❌ Failed to push features to Hopsworks")
-            return 1
-        
-        logger.info("=" * 60)
-        logger.info("INCREMENTAL FEATURE PIPELINE COMPLETED")
-        logger.info("=" * 60)
-        return 0
-        
-    except Exception as e:
-        logger.error(f"Feature pipeline failed: {e}")
-        import traceback
-        traceback.print_exc()
-        return 1
-
 if __name__ == "__main__":
     exit(main())

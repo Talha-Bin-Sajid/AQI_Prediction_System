@@ -168,7 +168,7 @@ async def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat(), "model_loaded": model is not None}
 
 
-# ✅ FIX: current AQI endpoint
+# FIX: current AQI endpoint
 @app.get("/api/current", response_model=CurrentAQIResponse)
 async def get_current_aqi():
     if fetcher is None:
@@ -195,7 +195,7 @@ async def get_current_aqi():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ✅ IMPROVED PREDICTION LOGIC
+# IMPROVED PREDICTION LOGIC
 @app.get("/api/predict", response_model=List[PredictionResponse])
 async def predict_aqi(days: int = 3):
     if model is None or feature_engineer is None:
@@ -220,7 +220,7 @@ async def predict_aqi(days: int = 3):
 
         adjusted_pred = apply_realistic_adjustments(model_pred, current_aqi)
 
-        # ✅ NEW: update lag features so next day's prediction uses today's output
+        # NEW: update lag features so next day's prediction uses today's output
         current_features["aqi_lag_1"] = adjusted_pred
         current_aqi = adjusted_pred
 
@@ -247,11 +247,11 @@ def get_model_prediction(current_features: pd.DataFrame, pred_time: datetime):
     future["hour_sin"] = np.sin(2 * np.pi * pred_time.hour / 24)
     future["hour_cos"] = np.cos(2 * np.pi * pred_time.hour / 24)
 
-    # ✅ FILTER FEATURE COLUMNS TO MATCH TRAINING
+    # FILTER FEATURE COLUMNS TO MATCH TRAINING
     try:
         future = future[model.feature_names_in_]
     except Exception as e:
-        print("🚨 Feature mismatch:", future.columns, model.feature_names_in_)
+        print(" Feature mismatch:", future.columns, model.feature_names_in_)
 
     return model.predict(future)[0]
 

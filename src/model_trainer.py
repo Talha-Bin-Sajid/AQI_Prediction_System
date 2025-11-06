@@ -218,10 +218,10 @@ class ModelTrainer:
                 if model_name == 'ridge_regression' and r2 > 0.5:
                     # Give ridge regression priority
                     valid_models.insert(0, (model_name, r2, rmse, model))
-                    logger.info(f"✅ PRIORITY MODEL: {model_name} (R²: {r2:.4f}, RMSE: {rmse:.4f})")
+                    logger.info(f"PRIORITY MODEL: {model_name} (R²: {r2:.4f}, RMSE: {rmse:.4f})")
                 elif r2 > 0.5:
                     valid_models.append((model_name, r2, rmse, model))
-                    logger.info(f"✅ VALID MODEL: {model_name} (R²: {r2:.4f}, RMSE: {rmse:.4f})")
+                    logger.info(f"VALID MODEL: {model_name} (R²: {r2:.4f}, RMSE: {rmse:.4f})")
                 
             except Exception as e:
                 logger.error(f"Error training {model_name}: {e}")
@@ -244,7 +244,7 @@ class ModelTrainer:
             self.best_model_name = best_model_name
             self.best_score = best_rmse
         else:
-            logger.warning("⚠️ No stable models found with R² > 0.5")
+            logger.warning("No stable models found with R² > 0.5")
         
         self.models = results['models']
         self.metrics = results['metrics']

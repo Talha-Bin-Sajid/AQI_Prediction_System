@@ -25,9 +25,9 @@ def main():
     )
     
     if df is not None and not df.empty:
-        logger.info(f"✅ 365-DAY BACKFILL COMPLETE! Fetched {len(df)} records")
-        logger.info(f"📅 Date range: {df['timestamp'].min()} to {df['timestamp'].max()}")
-        logger.info(f"📊 AQI Statistics for 365 days:")
+        logger.info(f"365-DAY BACKFILL COMPLETE! Fetched {len(df)} records")
+        logger.info(f"Date range: {df['timestamp'].min()} to {df['timestamp'].max()}")
+        logger.info(f"AQI Statistics for 365 days:")
         logger.info(f"   Mean: {df['aqi'].mean():.2f}")
         logger.info(f"   Std:  {df['aqi'].std():.2f}")
         logger.info(f"   Min:  {df['aqi'].min():.2f}")
@@ -35,11 +35,11 @@ def main():
         
         # Calculate data coverage
         date_range = df['timestamp'].max() - df['timestamp'].min()
-        logger.info(f"📈 Data coverage: {date_range.days} days")
+        logger.info(f"Data coverage: {date_range.days} days")
         
         return 0
     else:
-        logger.error("❌ 365-day backfill failed!")
+        logger.error("365-day backfill failed!")
         return 1
 
 
