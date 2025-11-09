@@ -277,21 +277,6 @@ class FeatureEngineer:
         
         return df
     
-    def add_time_features_final_simple(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Final simplified time features"""
-        df = df.copy()
-        
-        if not pd.api.types.is_datetime64_any_dtype(df['timestamp']):
-            df['timestamp'] = pd.to_datetime(df['timestamp'])
-        
-        # Only 2 essential time features
-        df['hour'] = df['timestamp'].dt.hour
-        df['month'] = df['timestamp'].dt.month
-        
-        # Only 1 cyclical feature
-        df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
-        
-        return df
 
     def add_lag_features_simple(self, df: pd.DataFrame, columns: List[str], lags: List[int]) -> pd.DataFrame:
         """Only add 24h lag"""
